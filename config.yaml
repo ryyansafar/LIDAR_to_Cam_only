@@ -74,8 +74,8 @@ training:
   freeze_encoder_epochs: 10
   checkpoint_dir: "checkpoints"
   # Height normalization (will be updated after running precompute_heights.py --stats)
-  height_mean: -1.8
-  height_std: 0.3
+  height_mean: -0.3582
+  height_std: 0.1581
 
 detection:
   pothole_depth_threshold: 0.05   # meters below local plane
