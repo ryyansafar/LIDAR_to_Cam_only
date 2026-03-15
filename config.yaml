@@ -1,0 +1,84 @@
+data:
+  train_root: "RSRD-dense/train"
+  test_root: "RSRD-dense/test"
+  road_seg_root: "road_segmentation"
+  precomputed_dir: "precomputed"
+  img_width: 1920
+  img_height: 1080
+  input_resize: [640, 360]
+
+# Per-date calibration sets from RSRD_dev_toolkit calibration_files/
+# Set 1: 2023-03-17, 2023-03-21 sequences
+# Set 2: 2023-04-06, 2023-04-08, 2023-04-09 sequences
+# Source: https://github.com/ztsrxh/RSRD_dev_toolkit
+calibration:
+  "20230317":
+    fx: 2024.50977
+    fy: 2024.50977
+    cx: 1033.38283
+    cy: 498.57018
+    # LiDAR → left camera rotation (3x3, row-major)
+    R: [-0.99998178, -0.00415805,  0.00307724,
+        -0.00322212,  0.03476848, -0.99938862,
+         0.00404993, -0.99938605, -0.03478425]
+    # LiDAR → left camera translation [tx, ty, tz] in meters
+    T: [0.00141, 0.07049, -0.02065]
+  "20230321":
+    fx: 2024.50977
+    fy: 2024.50977
+    cx: 1033.38283
+    cy: 498.57018
+    R: [-0.99998178, -0.00415805,  0.00307724,
+        -0.00322212,  0.03476848, -0.99938862,
+         0.00404993, -0.99938605, -0.03478425]
+    T: [0.00141, 0.07049, -0.02065]
+  "20230406":
+    fx: 2022.60020
+    fy: 2022.60020
+    cx: 1037.41747
+    cy: 500.81963
+    R: [-0.99999256,  0.00156192,  0.00347346,
+        -0.00341852,  0.03361777, -0.99942897,
+        -0.00167766, -0.99943385, -0.03361213]
+    T: [0.00780, 0.06977, -0.02762]
+  "20230408":
+    fx: 2022.60020
+    fy: 2022.60020
+    cx: 1037.41747
+    cy: 500.81963
+    R: [-0.99999256,  0.00156192,  0.00347346,
+        -0.00341852,  0.03361777, -0.99942897,
+        -0.00167766, -0.99943385, -0.03361213]
+    T: [0.00780, 0.06977, -0.02762]
+  "20230409":
+    fx: 2022.60020
+    fy: 2022.60020
+    cx: 1037.41747
+    cy: 500.81963
+    R: [-0.99999256,  0.00156192,  0.00347346,
+        -0.00341852,  0.03361777, -0.99942897,
+        -0.00167766, -0.99943385, -0.03361213]
+    T: [0.00780, 0.06977, -0.02762]
+
+training:
+  epochs: 50
+  batch_size: 4
+  num_workers: 4
+  lr: 1.0e-4
+  weight_decay: 1.0e-5
+  loss_berhu_weight: 1.0
+  loss_smooth_weight: 0.1
+  loss_l1_weight: 0.5
+  valid_depth_min: 1.0
+  valid_depth_max: 30.0
+  freeze_encoder_epochs: 10
+  checkpoint_dir: "checkpoints"
+  # Height normalization (will be updated after running precompute_heights.py --stats)
+  height_mean: -1.8
+  height_std: 0.3
+
+detection:
+  pothole_depth_threshold: 0.05   # meters below local plane
+  min_pothole_area_px: 500
+  local_plane_sigma: 25           # gaussian sigma for local plane estimation
+  morph_kernel_size: 7
