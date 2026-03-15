@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.data.dataset import HeightMapDataset, collate_fn
 from src.models.height_net import HeightNet
 from src.train import compute_metrics
+from src.utils import get_device
 
 
 def denormalize(t, mean, std):
@@ -79,7 +80,7 @@ def evaluate(args):
     with open(args.config) as f:
         cfg = yaml.safe_load(f)
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = get_device(args.device)
 
     # Load model
     ckpt = torch.load(args.checkpoint, map_location=device)
@@ -165,6 +166,8 @@ def main():
     parser.add_argument('--checkpoint', default='checkpoints/best.pt')
     parser.add_argument('--save_vis',   action='store_true', help='Save visualization PNGs')
     parser.add_argument('--max_vis',    type=int, default=50, help='Max visualizations to save')
+    parser.add_argument('--device',     default=None, choices=['cuda', 'mps', 'cpu'],
+                        help='Force a specific device (default: auto-select best)')
     args = parser.parse_args()
     evaluate(args)
 

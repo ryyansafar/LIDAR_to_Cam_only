@@ -21,6 +21,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.models.height_net import HeightNet
 from src.detect_potholes import detect_potholes, visualize_detections
+from src.utils import get_device
 
 
 _MEAN = [0.485, 0.456, 0.406]
@@ -189,13 +190,14 @@ def main():
     parser.add_argument('--image',  default=None, help='Single image path')
     parser.add_argument('--video',  default=None, help='Video file path')
     parser.add_argument('--output', default=None, help='Output file path')
+    parser.add_argument('--device', default=None, choices=['cuda', 'mps', 'cpu'],
+                        help='Force a specific device (default: auto-select best)')
     args = parser.parse_args()
 
     if not args.image and not args.video:
         parser.error('Provide --image or --video')
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Device: {device}")
+    device = get_device(args.device)
 
     model, cfg = load_model(args.checkpoint, device)
 

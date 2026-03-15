@@ -20,6 +20,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.data.dataset import HeightMapDataset, collate_fn
 from src.models.height_net import HeightNet
+from src.utils import get_device
 
 
 # ---------------------------------------------------------------------------
@@ -122,8 +123,7 @@ def train(args):
     with open(args.config) as f:
         cfg = yaml.safe_load(f)
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Using device: {device}")
+    device = get_device(args.device)
 
     # Datasets
     full_ds = HeightMapDataset(cfg, split='train', augment=True)
@@ -286,6 +286,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default='config.yaml')
     parser.add_argument('--resume', default=None, help='Path to checkpoint to resume from')
+    parser.add_argument('--device', default=None, choices=['cuda', 'mps', 'cpu'],
+                        help='Force a specific device (default: auto-select best)')
     args = parser.parse_args()
     train(args)
 
